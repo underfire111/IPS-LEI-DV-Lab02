@@ -22,6 +22,7 @@ public class PlayerMovement : MonoBehaviour
     [SerializeField] private LayerMask Terrain;
     bool isGrounded;
 
+    Animator animator;
 
     [SerializeField] private Transform orientation;
 
@@ -34,6 +35,8 @@ public class PlayerMovement : MonoBehaviour
 
     void Awake()
     {
+        animator = transform.GetChild(2).gameObject.GetComponent<Animator>();
+        horizontalInput = verticalInput = 0;
         readyToJump = true;
     }
 
@@ -48,6 +51,7 @@ public class PlayerMovement : MonoBehaviour
     void Update()
     {
         isGrounded = transform.Find("Ground Check").GetComponent<GroundCheck>().IsGrounded();
+        animator.SetBool("isRunning", (horizontalInput != 0 || verticalInput != 0));
 
         MyInput();
         SpeedControl();
@@ -64,7 +68,7 @@ public class PlayerMovement : MonoBehaviour
         verticalInput = Input.GetAxisRaw("Vertical");
 
         // when to jump
-
+        
         if (Input.GetKey(jumpKey) && readyToJump && isGrounded)
         {
             readyToJump = false;

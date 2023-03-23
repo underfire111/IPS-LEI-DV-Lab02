@@ -5,11 +5,13 @@ using UnityEngine;
 public class ShootProjectile : MonoBehaviour
 {
     [SerializeField] private Transform prefab;
-    [SerializeField] private GameObject cam;
+    [SerializeField] private GameObject gun;
+    [SerializeField] private GameObject crosshair;
+
+    Animator animator;
 
     Vector3 shootingPoint;
-    
-    Vector3 position;
+    Vector3 targetPoint;
     Quaternion rotation;
 
     [Header("Keybinds")]
@@ -20,35 +22,44 @@ public class ShootProjectile : MonoBehaviour
 
     void Awake()
     {
+        animator = transform.GetChild(2).gameObject.GetComponent<Animator>();
         readyToShoot = true;
     }
 
     private void FixedUpdate()
     {
-        position = cam.transform.position;
+        shootingPoint = gun.transform.position;
+        targetPoint = crosshair.transform.position;
         rotation = transform.rotation;
-        shootingPoint = cam.transform.GetChild(0).gameObject.transform.position;
     }
 
     // Update is called once per frame
     void Update()
     {
-
-        if (Input.GetKey(shootKey) && readyToShoot)
+        if (Input.GetKey(shootKey))
         {
-            readyToShoot = false;
+            animator.SetBool("isShooting", true);
+            
+            if (readyToShoot)
+            {
+                readyToShoot = false;
 
-            Shoot();
+                Shoot();
 
-            Invoke(nameof(ResetShoot), shootCooldown);
+                Invoke(nameof(ResetShoot), shootCooldown);
+            }
+        }
+        else
+        {
+            animator.SetBool("isShooting", false);
         }
     }
 
     private void Shoot()
     {
-        Transform projectile = Instantiate(prefab, position, rotation);
+        Transform projectile = Instantiate(prefab, shootingPoint, rotation);
 
-        Vector3 direction = shootingPoint - position;
+        Vector3 direction = (targetPoint - shootingPoint).normalized;
 
         projectile.GetComponent<ProjectileBehaviour>().Setup(direction);
     }

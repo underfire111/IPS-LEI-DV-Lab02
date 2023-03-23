@@ -12,7 +12,6 @@ public class ProjectileBehaviour : MonoBehaviour
     {
         Destroy(gameObject, 10f);
     }
-    
 
     void Update()
     {
@@ -26,7 +25,7 @@ public class ProjectileBehaviour : MonoBehaviour
 
     private void OnCollisionEnter(Collision collision)
     {
-        if (collision.gameObject.layer == 7)
+        if (collision != null)
         {
             Destroy(gameObject);
         }
